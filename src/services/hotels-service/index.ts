@@ -45,9 +45,15 @@ async function getHotelsWithRooms(userId: number, hotelId: number) {
   return hotel;
 }
 
+async function updateRedisHotelById(hotelId: number) {
+  const hotels = await hotelRepository.findRoomsByHotelId(hotelId);
+  await cacheHotelRepository.updateHotelById(hotelId, hotels);
+}
+
 const hotelService = {
   getHotels,
   getHotelsWithRooms,
+  updateRedisHotelById,
 };
 
 export default hotelService;

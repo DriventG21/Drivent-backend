@@ -13,7 +13,6 @@ export async function disconnectDB(): Promise<void> {
   await prisma?.$disconnect();
 }
 
-
 export const redis = createClient({
   url: process.env.REDIS_URL
 });
