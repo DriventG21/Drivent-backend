@@ -18,6 +18,7 @@ import {
   hotelsRouter,
   bookingRouter
 } from "@/routers";
+import { redisStartup } from "@/utils/redis-startup";
 
 const app = express();
 app
@@ -36,7 +37,7 @@ app
 
 export function init(): Promise<Express> {
   connectDb();
-  connectRedis();
+  connectRedis().then(redisStartup);
   return Promise.resolve(app);
 }
 
