@@ -1,4 +1,4 @@
-import { init } from "@/app";
+import { close, init } from "@/app";
 import { prisma } from "@/config";
 import authenticationService, { invalidCredentialsError } from "@/services/authentication-service";
 import faker from "@faker-js/faker";
@@ -8,6 +8,10 @@ import { cleanDb } from "../helpers";
 beforeAll(async () => {
   await init();
   await cleanDb();
+});
+
+afterAll(async () => {
+  await close();
 });
 
 describe("signIn", () => {

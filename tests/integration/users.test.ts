@@ -1,4 +1,4 @@
-import app, { init } from "@/app";
+import app, { close, init } from "@/app";
 import { prisma } from "@/config";
 import { duplicatedEmailError } from "@/services/users-service";
 import { faker } from "@faker-js/faker";
@@ -11,6 +11,10 @@ import { cleanDb } from "../helpers";
 beforeAll(async () => {
   await init();
   await cleanDb();
+});
+
+afterAll(async () => {
+  await close();
 });
 
 const server = supertest(app);
