@@ -27,10 +27,10 @@ async function findRoomsByHotelId(hotelId: number): Promise<FindHotelsReturn> {
     include: {
       Rooms: {
         include: {
-          Booking: true
-        }
+          Booking: true,
+        },
       },
-    }
+    },
   });
 }
 
