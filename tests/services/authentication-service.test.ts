@@ -12,7 +12,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await close();
-})
+});
 
 describe("signIn", () => {
   const generateParams = () => ({

@@ -16,7 +16,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await close();
-})
+});
 
 const server = supertest(app);
 
