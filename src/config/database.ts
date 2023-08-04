@@ -22,5 +22,5 @@ export async function connectRedis() {
 }
 
 export async function disconnectRedis() {
-  await redis.disconnect();
+  await redis.quit();
 }

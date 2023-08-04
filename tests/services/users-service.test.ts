@@ -1,4 +1,4 @@
-import { init } from "@/app";
+import { close, init } from "@/app";
 import { prisma } from "@/config";
 import userService, { duplicatedEmailError } from "@/services/users-service";
 import faker from "@faker-js/faker";
@@ -10,6 +10,10 @@ beforeAll(async () => {
   await init();
   await cleanDb();
 });
+
+afterAll(async () => {
+  await close();
+})
 
 describe("createUser", () => {
   it("should throw duplicatedUserError if there is a user with given email", async () => {
