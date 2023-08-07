@@ -1,4 +1,4 @@
-import { init } from "@/app";
+import { close, init } from "@/app";
 import { prisma } from "@/config";
 import userService, { duplicatedEmailError } from "@/services/users-service";
 import faker from "@faker-js/faker";
@@ -9,6 +9,10 @@ import { cleanDb } from "../helpers";
 beforeAll(async () => {
   await init();
   await cleanDb();
+});
+
+afterAll(async () => {
+  await close();
 });
 
 describe("createUser", () => {
