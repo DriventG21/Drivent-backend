@@ -134,6 +134,8 @@ model ActivityEnroll {
   Activity     Activity     @relation(fields: [activityId], references: [id])
   userId       Int
   User         User         @relation(fields: [userId], references: [id])
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
 
 model Hotel {
