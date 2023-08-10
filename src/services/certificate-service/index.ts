@@ -1,6 +1,7 @@
 import { forbiddenError, notFoundError } from "@/errors";
 import enrollmentRepository from "@/repositories/enrollment-repository";
-import tikectRepository from "@/repositories/ticket-repository";
+import ticketRepository from "@/repositories/ticket-repository";
+import { countUserActivitiesEnroll } from "@/repositories/activities-repository";
 import eventsService from "../events-service";
 import dayjs from "dayjs";
 
@@ -11,16 +12,7 @@ async function validateEventIsOver(): Promise<boolean> {
 
 async function createCertificate(userId: number) {
   const { enrollment, ticket } = await checkPossibility(userId);
-  // - O evento só fica disponível após a conclusão do evento.
-  // uncomment to undo mock
-  // const { event, eventEndsAt, eventStartsAt } = await checkEventisOngoing();
-
-  // mock
-  const event = await eventsService.getFirstEvent();
-  const eventStartsAt = dayjs(event.startsAt);
-  const eventEndsAt = dayjs(event.endsAt);
-
-  // end mock
+  const { event, eventEndsAt, eventStartsAt } = await checkEventisOngoing();
 
   return {
     event: event.title,
@@ -41,14 +33,18 @@ async function checkPossibility(userId: number) {
     throw notFoundError("Cannot Find Enrollment");
   }
 
-  const ticket = await tikectRepository.findTicketByEnrollmentId(enrollment.id);
+  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
   if (!ticket || ticket.status === "RESERVED") {
     throw forbiddenError("Ticket not paid");
   }
 
-  // - Para usuários presenciais, é necessário que ele tenha participado de pelo menos cinco atividades durante todos os dias do evento.
-  //TODO: Verificar se usuário da modalidade presencial foi inscrito em pelo menos 5 atividades
-
+  if (!ticket.TicketType.isRemote) {
+    const minimalAmount = 5;
+    const activitiesAmount = await countUserActivitiesEnroll(userId);
+    if (activitiesAmount < minimalAmount) {
+      throw forbiddenError("Not enough activities enrolled");
+    }
+  }
   return { enrollment, ticket };
 }
 
