@@ -6,4 +6,5 @@ export * from "./tickets-router";
 export * from "./payments-router";
 export * from "./hotels-router";
 export * from "./booking-router";
+export * from "./activities-router";
 export * from "./certificate-router";

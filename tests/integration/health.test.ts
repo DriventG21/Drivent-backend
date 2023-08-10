@@ -1,6 +1,7 @@
 import app, { close, init } from "@/app";
 import httpStatus from "http-status";
 import supertest from "supertest";
+import { cleanDb } from "../helpers";
 
 beforeAll(async () => {
   await init();

@@ -17,6 +17,7 @@ import {
   paymentsRouter,
   hotelsRouter,
   bookingRouter,
+  activitiesRouter,
   certificateRouter
 } from "@/routers";
 
@@ -33,6 +34,7 @@ app
   .use("/payments", paymentsRouter)
   .use("/hotels", hotelsRouter)
   .use("/booking", bookingRouter)
+  .use("/activities", activitiesRouter)
   .use("/certificate", certificateRouter)
   .use(handleApplicationErrors);
 
