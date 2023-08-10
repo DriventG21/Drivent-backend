@@ -6,12 +6,12 @@ export async function selectActivitiesWithEnrolls(date: Date) {
     where: {
       startAt: {
         gte: date,
-        lte: dayjs(date).add(1, "day").toDate()
-      }
+        lte: dayjs(date).add(1, "day").toDate(),
+      },
     },
     include: {
-      ActivityEnroll: true
-    }
+      ActivityEnroll: true,
+    },
   });
 }
 
@@ -22,16 +22,16 @@ export async function selectActivities() {
 export async function selectActivity(id: number) {
   return prisma.activity.findUnique({
     where: {
-      id
-    }
+      id,
+    },
   });
 }
 
 export async function selectActivityEnrolls(activityId: number) {
   return prisma.activityEnroll.findMany({
     where: {
-      activityId
-    }
+      activityId,
+    },
   });
 }
 
@@ -39,8 +39,16 @@ export async function insertActivityEnroll(userId: number, activityId: number) {
   return prisma.activityEnroll.create({
     data: {
       userId,
-      activityId
-    }
+      activityId,
+    },
+  });
+}
+
+export async function countUserActivitiesEnroll(userId: number) {
+  return await prisma.activityEnroll.count({
+    where: {
+      userId,
+    },
   });
 }
 
