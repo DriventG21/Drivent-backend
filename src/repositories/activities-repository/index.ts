@@ -51,3 +51,14 @@ export async function countUserActivitiesEnroll(userId: number) {
     },
   });
 }
+
+export async function selectUserEnrollsByUserId(userId: number) {
+  return prisma.activityEnroll.findMany({
+    where: {
+      userId
+    },
+    include: {
+      Activity: true
+    }
+  });
+}

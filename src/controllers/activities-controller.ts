@@ -32,6 +32,7 @@ export async function postActivityEnroll(req: AuthenticatedRequest, res: Respons
   }catch(err) {
     if(err.name === "NotFoundError") return res.status(httpStatus.NOT_FOUND).send(err.message);
     if(err.name === "noVacancyError") return res.status(httpStatus.IM_A_TEAPOT).send(err.message);
+    if(err.name === "ConflictError") return res.status(httpStatus.CONFLICT).send(err.message);
         
     res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
   }

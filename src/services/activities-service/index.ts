@@ -1,6 +1,7 @@
-import { notFoundError } from "@/errors";
+import { conflictError, notFoundError } from "@/errors";
 import { noVacancyError } from "@/errors/no-vacancy-error";
-import { insertActivityEnroll, selectActivities, selectActivitiesWithEnrolls, selectActivity, selectActivityEnrolls } from "@/repositories/activities-repository";
+import { insertActivityEnroll, selectActivities, selectActivitiesWithEnrolls, selectActivity, selectActivityEnrolls, selectUserEnrollsByUserId } from "@/repositories/activities-repository";
+import dayjs from "dayjs";
 
 export async function getAllActivities() {
   const activities = await selectActivities();
@@ -25,9 +26,17 @@ export async function createActivityEnroll(userId: number, activityId: number) {
 
   if(!activity) throw notFoundError();
 
+  const userEnrolls = await selectUserEnrollsByUserId(userId);
+
+  userEnrolls?.forEach(enroll => {
+    if((activity.startAt.getTime() >= enroll.Activity.startAt.getTime() && activity.startAt.getTime() < enroll.Activity.endAt.getTime()) ||
+    (activity.startAt.getTime() < enroll.Activity.startAt.getTime() && activity.endAt.getTime() > enroll.Activity.startAt.getTime())
+    ) throw conflictError("User cannot enroll to two activities that happen simultaneously");
+  }); 
+
   const enrolls = await selectActivityEnrolls(activityId);
 
   if(activity.vacancy - enrolls.length === 0) throw noVacancyError();
 
-  return insertActivityEnroll(userId, activityId);
+  return await insertActivityEnroll(userId, activityId);
 }
