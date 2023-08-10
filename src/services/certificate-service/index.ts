@@ -11,8 +11,8 @@ async function validateEventIsOver(): Promise<boolean> {
 }
 
 async function createCertificate(userId: number) {
-  const { enrollment, ticket } = await checkPossibility(userId);
   const { event, eventEndsAt, eventStartsAt } = await checkEventisOngoing();
+  const { enrollment, ticket } = await checkPossibility(userId);
 
   return {
     event: event.title,
@@ -50,6 +50,9 @@ async function checkPossibility(userId: number) {
 
 async function checkEventisOngoing() {
   const event = await eventsService.getFirstEvent();
+  if (!event) {
+    throw notFoundError("No event was found");
+  }
   const eventStartsAt = dayjs(event.startsAt);
   const eventEndsAt = dayjs(event.endsAt);
   const now = dayjs();
