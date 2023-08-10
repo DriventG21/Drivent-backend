@@ -29,5 +29,5 @@ export async function createActivityEnroll(userId: number, activityId: number) {
 
   if(activity.vacancy - enrolls.length === 0) throw noVacancyError();
 
-  return insertActivityEnroll(userId, activityId);
+  return await insertActivityEnroll(userId, activityId);
 }

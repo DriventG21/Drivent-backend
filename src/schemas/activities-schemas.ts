@@ -5,5 +5,5 @@ export const activitiesSchema = Joi.object({
 });
 
 export const activityEnrollSchema = Joi.object({
-  activityId: Joi.number().greater(0).required()
+  activityId: Joi.number().required()
 });
