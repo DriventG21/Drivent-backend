@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import "express-async-errors";
 import express, { Express } from "express";
+import "express-async-errors";
 import cors from "cors";
 
 import { loadEnv, connectDb, disconnectDB, connectRedis, disconnectRedis } from "@/config";
@@ -17,7 +17,7 @@ import {
   paymentsRouter,
   hotelsRouter,
   bookingRouter,
-  activitiesRouter
+  activitiesRouter,
 } from "@/routers";
 
 const app = express();
