@@ -36,7 +36,6 @@ app
   .use("/booking", bookingRouter)
   .use("/activities", activitiesRouter)
   .use("/certificate", certificateRouter)
-  .all('/*', (req, res) => res.sendStatus(404))
   .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {
