@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import "express-async-errors";
 import express, { Express } from "express";
+import "express-async-errors";
 import cors from "cors";
 
 import { loadEnv, connectDb, disconnectDB, connectRedis, disconnectRedis } from "@/config";
@@ -17,7 +17,8 @@ import {
   paymentsRouter,
   hotelsRouter,
   bookingRouter,
-  activitiesRouter
+  activitiesRouter,
+  certificateRouter
 } from "@/routers";
 
 const app = express();
@@ -34,6 +35,7 @@ app
   .use("/hotels", hotelsRouter)
   .use("/booking", bookingRouter)
   .use("/activities", activitiesRouter)
+  .use("/certificate", certificateRouter)
   .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {
