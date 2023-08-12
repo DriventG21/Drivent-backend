@@ -1,22 +1,15 @@
 import { prisma } from "@/config";
-import dayjs from "dayjs";
-
-export async function selectActivitiesWithEnrolls(date: Date) {
-  return prisma.activity.findMany({
-    where: {
-      startAt: {
-        gte: date,
-        lte: dayjs(date).add(1, "day").toDate(),
-      },
-    },
-    include: {
-      ActivityEnroll: true,
-    },
-  });
-}
 
 export async function selectActivities() {
-  return prisma.activity.findMany({});
+  return prisma.activity.findMany({
+    include: {
+      _count: {
+        select: {
+          ActivityEnroll: true
+        }
+      }
+    }
+  });
 }
 
 export async function selectActivity(id: number) {
@@ -61,4 +54,8 @@ export async function selectUserEnrollsByUserId(userId: number) {
       Activity: true
     }
   });
+}
+
+export async function selectActivitiesEnrolls() {
+  return prisma.activityEnroll.findMany();
 }
