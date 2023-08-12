@@ -1,27 +1,41 @@
 import { conflictError, notFoundError } from "@/errors";
 import { noVacancyError } from "@/errors/no-vacancy-error";
-import { insertActivityEnroll, selectActivities, selectActivitiesWithEnrolls, selectActivity, selectActivityEnrolls, selectUserEnrollsByUserId } from "@/repositories/activities-repository";
-import dayjs from "dayjs";
+import { insertActivityEnroll, selectActivities, selectActivitiesEnrolls, selectActivity, selectActivityEnrolls, selectUserEnrollsByUserId } from "@/repositories/activities-repository";
+import enrollmentRepository from "@/repositories/enrollment-repository";
+import { Activity } from "@prisma/client";
+import { otherStepsError } from "./errors";
+import bookingRepository from "@/repositories/booking-repository";
 
-export async function getAllActivities() {
-  const activities = await selectActivities();
+type returnActivities = Activity & {
+  userIsRegistered?: boolean
+} & { _count: { ActivityEnroll: number } }
 
-  return activities;
-}
+export async function getAllActivities(userId: number) {
+  await checkTicketBookingAndEnrollment(userId);
 
-export async function getActivitiesByDate(date: Date) {
-  const activities = await selectActivitiesWithEnrolls(date);
+  const activities: returnActivities[] = await selectActivities();
 
-  if(activities.length < 1) throw notFoundError();
+  const activitiesEnrolls = await selectActivitiesEnrolls();
 
-  activities.forEach(activity => {
-    activity.vacancy -= activity.ActivityEnroll.length;
+  const userEnrollsHash: { [id: number]: boolean } = {};
+
+  activitiesEnrolls?.forEach(enroll => {
+    if(enroll.userId === userId) userEnrollsHash[enroll.activityId] = true;
+  });
+
+  activities?.forEach(act => {
+    act.vacancy -= act._count.ActivityEnroll;
+    delete act._count;
+    if(userEnrollsHash[act.id]) act.userIsRegistered = true;
+    else act.userIsRegistered = false;
   });
 
   return activities;
 }
 
 export async function createActivityEnroll(userId: number, activityId: number) {
+  await checkTicketBookingAndEnrollment(userId);
+  
   const activity = await selectActivity(activityId);
 
   if(!activity) throw notFoundError();
@@ -39,4 +53,15 @@ export async function createActivityEnroll(userId: number, activityId: number) {
   if(activity.vacancy - enrolls.length === 0) throw noVacancyError();
 
   return await insertActivityEnroll(userId, activityId);
+}
+
+async function checkTicketBookingAndEnrollment(userId: number) {
+  const enrollment = await enrollmentRepository.findWithTicketAndTicketTypeByUserId(userId);
+  const ticket = enrollment?.Ticket[0];
+  const ticketType = enrollment?.Ticket[0]?.TicketType;
+  const booking = await bookingRepository.findByUserId(userId);
+
+  if(!enrollment || !ticket ||
+    ticket?.status !== "PAID" || 
+    ticketType.isRemote || (ticketType.includesHotel && !booking)) throw otherStepsError();
 }
