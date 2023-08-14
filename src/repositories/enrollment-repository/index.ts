@@ -1,11 +1,25 @@
 import { prisma } from "@/config";
-import { Enrollment } from "@prisma/client";
+import { Enrollment, Prisma } from "@prisma/client";
 
 async function findWithAddressByUserId(userId: number) {
   return prisma.enrollment.findFirst({
     where: { userId },
     include: {
       Address: true,
+    },
+  });
+}
+
+async function findWithTicketAndTicketTypeByUserId(userId: number) {
+  return prisma.enrollment.findFirst({
+    where: { userId },
+    include: {
+      Ticket: {
+        select: {
+          status: true,
+          TicketType: true
+        }
+      },
     },
   });
 }
@@ -20,8 +34,9 @@ async function upsert(
   userId: number,
   createdEnrollment: CreateEnrollmentParams,
   updatedEnrollment: UpdateEnrollmentParams,
+  tx: Prisma.TransactionClient,
 ) {
-  return prisma.enrollment.upsert({
+  return tx.enrollment.upsert({
     where: {
       userId,
     },
@@ -37,6 +52,7 @@ const enrollmentRepository = {
   findWithAddressByUserId,
   upsert,
   findById,
+  findWithTicketAndTicketTypeByUserId
 };
 
 export default enrollmentRepository;
