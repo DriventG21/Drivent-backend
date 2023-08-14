@@ -61,7 +61,7 @@ async function checkTicketBookingAndEnrollment(userId: number) {
   const ticketType = enrollment?.Ticket[0]?.TicketType;
   const booking = await bookingRepository.findByUserId(userId);
 
-  if(!enrollment || !ticket || ticket?.status !== "PAID") throw paymentRequiredError();
+  if(!enrollment || !ticket || ticket?.status !== "PAID" || (ticketType.includesHotel && !booking)) throw paymentRequiredError();
 
-  if(ticketType.isRemote || (ticketType.includesHotel && !booking)) throw otherStepsError();
+  if(ticketType.isRemote) throw otherStepsError();
 }
