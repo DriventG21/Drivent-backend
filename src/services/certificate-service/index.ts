@@ -5,8 +5,9 @@ import { countUserActivitiesEnroll } from "@/repositories/activities-repository"
 import eventsService from "../events-service";
 import dayjs from "dayjs";
 
-async function validateEventIsOver(): Promise<boolean> {
+async function validateEventIsOver(userId: number): Promise<boolean> {
   await checkEventisOngoing();
+  await checkPossibility(userId);
   return true;
 }
 
