@@ -1,5 +1,5 @@
 import { prisma } from "@/config";
-import { Payment } from "@prisma/client";
+import { Payment, Prisma } from "@prisma/client";
 
 async function findPaymentByTicketId(ticketId: number) {
   return prisma.payment.findFirst({
@@ -9,8 +9,8 @@ async function findPaymentByTicketId(ticketId: number) {
   });
 }
 
-async function createPayment(ticketId: number, params: PaymentParams) {
-  return prisma.payment.create({
+async function createPayment(ticketId: number, params: PaymentParams, tx: Prisma.TransactionClient) {
+  return tx.payment.create({
     data: {
       ticketId,
       ...params,
