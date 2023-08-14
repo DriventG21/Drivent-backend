@@ -1,11 +1,12 @@
 import { AuthenticatedRequest } from "@/middlewares";
-import { Request, Response } from "express";
+import { Response } from "express";
 import httpStatus from "http-status";
 import certificateService from "@/services/certificate-service";
 
-export async function validateEventIsOver(req: Request, res: Response) {
+export async function validateEventIsOver(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
   try {
-    await certificateService.validateEventIsOver();
+    await certificateService.validateEventIsOver(userId);
     return res.sendStatus(httpStatus.OK);
   } catch (error) {
     if (error.name === "ForbiddenAction") {
