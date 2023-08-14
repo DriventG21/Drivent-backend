@@ -26,6 +26,7 @@ export async function postActivityEnroll(req: AuthenticatedRequest, res: Respons
     if(err.name === "noVacancyError") return res.status(httpStatus.IM_A_TEAPOT).send(err.message);
     if(err.name === "ConflictError") return res.status(httpStatus.CONFLICT).send(err.message);
     if(err.name === "otherStepsError") return res.status(httpStatus.FORBIDDEN).send(err.message);
+    if(err.name === "paymentRequiredError") return res.status(httpStatus.PAYMENT_REQUIRED).send(err.message);
         
     res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
   }
