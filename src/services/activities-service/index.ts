@@ -3,7 +3,7 @@ import { noVacancyError } from "@/errors/no-vacancy-error";
 import { insertActivityEnroll, selectActivities, selectActivitiesEnrolls, selectActivity, selectActivityEnrolls, selectUserEnrollsByUserId } from "@/repositories/activities-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import { Activity } from "@prisma/client";
-import { otherStepsError } from "./errors";
+import { otherStepsError, paymentRequiredError } from "./errors";
 import bookingRepository from "@/repositories/booking-repository";
 
 type returnActivities = Activity & {
@@ -61,7 +61,7 @@ async function checkTicketBookingAndEnrollment(userId: number) {
   const ticketType = enrollment?.Ticket[0]?.TicketType;
   const booking = await bookingRepository.findByUserId(userId);
 
-  if(!enrollment || !ticket ||
-    ticket?.status !== "PAID" || 
-    ticketType.isRemote || (ticketType.includesHotel && !booking)) throw otherStepsError();
+  if(!enrollment || !ticket || ticket?.status !== "PAID") throw paymentRequiredError();
+
+  if(ticketType.isRemote || (ticketType.includesHotel && !booking)) throw otherStepsError();
 }
